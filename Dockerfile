@@ -1,3 +1,11 @@
+FROM gradle:8.10.2-jdk17 AS build
+
+WORKDIR /app
+
+COPY . .
+
+RUN ./gradlew build --no-daemon
+
 FROM debian:bullseye-slim
 
 RUN apt update \
@@ -5,7 +13,7 @@ RUN apt update \
 
 WORKDIR /app
 
-COPY ./build/libs/br.com.fitapp-0.0.1.jar /app/app.jar
+COPY --from=build /app/build/libs/br.com.fitapp-0.0.1.jar /app/app.jar
 
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
 RUN chmod +x /usr/local/bin/wait-for-it.sh
